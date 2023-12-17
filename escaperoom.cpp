@@ -14,24 +14,12 @@ public:
     int enemyPos;         // posisi enemy, bakal keupdate terus
     int energy;           // energynya player, bakal keupdate terus
     int shortestDistance; // jarak terpendek dari posisi player ke escape point
+    int initialEnergy;
+    int worstDistance;
 
-    bool isDead;
-
-    EscapeRoomGame(int level)
+    EscapeRoomGame()
     {
-        isDead = false;
-        if (level == 1)
-        {
-            jumlahVertex = 5;
-        }
-        else if (level == 2)
-        {
-            jumlahVertex = 7;
-        }
-        else if (level == 3)
-        {
-            jumlahVertex = 10;
-        }
+        jumlahVertex = 50;
 
         this->jumlahVertex = jumlahVertex;
         this->adjMatrix = vector(jumlahVertex, vector(jumlahVertex, 0));
@@ -47,10 +35,11 @@ public:
                 }
                 else
                 {
-                    int p = rand() % 5;
+                    int p = rand() % 7;
                     if (p == 1)
                     {
                         int randomizedWeight = rand() % 10 + 1;
+                        worstDistance += randomizedWeight;
                         adjMatrix[i][j] = randomizedWeight;
                         adjMatrix[j][i] = randomizedWeight;
                     }
@@ -60,9 +49,8 @@ public:
 
         // set posisi player secara random
         this->playerPos = rand() % jumlahVertex;
-        this->energy = 50;
-
-        cout << "Ini player pos = " << playerPos << endl;
+        this->energy = shortestDistance * 5;
+        this->initialEnergy = energy;
     }
 
     void printGraph()
@@ -152,7 +140,7 @@ public:
         vector<bool> visited(this->jumlahVertex, false);
         vector<int> distance(jumlahVertex, 0);
         queue<int> bfsQueue;
-        vector<vector<int>> path;
+        vector<vector<int>> path(jumlahVertex);
         path[startVertice] = {startVertice};
         // untuk startig point
         visited[startVertice] = true;
@@ -285,39 +273,40 @@ public:
 
         this->escapePoint = maxIndex;
 
-        cout << "Escape point = " << escapePoint << endl;
         this->shortestDistance = dijkstra(playerPos, escapePoint);
 
         // set posisi enemy di sebelah escape point
+        int maxDistances = 0;
+        int maxIndeks = 0;
         for (int i = 0; i < jumlahVertex; i++)
         {
-            if (adjMatrix[escapePoint][i] != 0)
+            if (distance[i] > maxDistances && i != escapePoint)
             {
-                enemyPos = i;
-                break;
+                maxDistances = distance[i];
+                maxIndeks = i;
             }
         }
+        this->enemyPos = maxIndeks;
     }
 
     // apa yg bakal terjadi setiap kali player pergi ke posisi lain?
-    void move(int choice)
+    void movePlayer(int choice)
     {
-        // cek apakah energy player cukup, semisal energy player kurang dari semua jalur yg dapat dikunjungi, game end
-        if (energy >= adjMatrix[playerPos][choice])
-        {
             // update posisi player
+            energy = energy - adjMatrix[playerPos][choice];
             this->playerPos = choice;
-        }
+            // cout << "Energy yang tersisa : " << energy << endl;
+    }
 
+    void moveEnemy()
+    {
         // posisi enemy terupdate, bergerak mendekati player
-        vector<int> pathEnemy = findPath(playerPos, enemyPos);
+        vector<int> pathEnemy = findPath(enemyPos, playerPos);
 
-        auto z = pathEnemy.end();
-        advance(z, -1);
+        auto z = pathEnemy.begin();
+        advance(z, 1);
 
-        cout << *z << endl;
-
-        cout << "Path: ";
+        cout << "Kidnapper Path: ";
 
         for (auto z = pathEnemy.begin(); z != pathEnemy.end(); z++)
         {
@@ -326,12 +315,50 @@ public:
         cout << endl;
 
         enemyPos = *z;
+    }
 
+    bool isDead()
+    {
         if (enemyPos == playerPos)
         {
             cout << "Game over! Kidnapper menemukanmu!";
-            isDead = true;
+            return true;
         }
+        if (energy <= 0)
+        {
+            cout << "Game over! Energy habis!";
+            return true;
+        }
+        return false;
+    }
+
+    // asdjhasdhalda
+    int calculateScore()
+    {
+        int traveledDistance = initialEnergy - energy;
+        int offset = initialEnergy / 5;
+        int score1 = abs(traveledDistance - shortestDistance);
+        if (score1 > offset * 5)
+        {
+            return 1;
+        }
+        else if (score1 > offset * 4)
+        {
+            return 2;
+        }
+        else if (score1 > offset * 3)
+        {
+            return 3;
+        }
+        else if (score1 > offset * 2)
+        {
+            return 4;
+        }
+        else if (score1 > offset)
+        {
+            return 5;
+        }
+        return 0;
     }
 
     void run()
@@ -339,10 +366,12 @@ public:
 
         printGraph();
         set();
+        int count = 1;
 
         do
         {
-
+            cout << endl;
+            cout << "Energi Sekarang : " << energy << endl;
             int jarakEnemy = BFS(playerPos, enemyPos);
             int jarakEscape = BFS(playerPos, escapePoint);
 
@@ -356,6 +385,10 @@ public:
 
             int choice;
             bool exist = false;
+            if (count % 2 == 0)
+            {
+                moveEnemy();
+            }
 
             do
             {
@@ -371,13 +404,21 @@ public:
                 }
             } while (!exist);
 
-            move(choice);
+            movePlayer(choice);
+            count++;
 
-            if (isDead)
+            if (isDead())
             {
+                exit(0);
             }
 
         } while (!isWin());
+        cout << "Hore menang!" << endl;
+        for (int i = 0; i < calculateScore(); i++)
+        {
+            cout << "* ";
+        }
+        
     }
 };
 
@@ -387,9 +428,9 @@ int main()
     cout << "You have been abducted and placed in a basement with many rooms, you need to walk a certain distance before reaching to the next room and it takes a certain amount of your energy. Find your way out before you run out of energy!" << endl
          << endl;
 
-    int level;
-    do
-    {
-        cout << "Select your level: \n1. Easy\n2. Medium\n3. Hard\nChoose a level (1/2/3): ";
-        cin >> level;
-    } while
+    EscapeRoomGame e;
+
+    e.run();
+
+    return 0;
+}
