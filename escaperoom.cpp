@@ -19,7 +19,7 @@ public:
 
     EscapeRoomGame()
     {
-        jumlahVertex = 50;
+        jumlahVertex = 30;
 
         this->jumlahVertex = jumlahVertex;
         this->adjMatrix = vector(jumlahVertex, vector(jumlahVertex, 0));
@@ -49,8 +49,6 @@ public:
 
         // set posisi player secara random
         this->playerPos = rand() % jumlahVertex;
-        this->energy = shortestDistance * 5;
-        this->initialEnergy = energy;
     }
 
     void printGraph()
@@ -274,6 +272,8 @@ public:
         this->escapePoint = maxIndex;
 
         this->shortestDistance = dijkstra(playerPos, escapePoint);
+        this->energy = shortestDistance * 2;
+        this->initialEnergy = energy;
 
         // set posisi enemy di sebelah escape point
         int maxDistances = 0;
@@ -308,7 +308,7 @@ public:
 
         cout << "Kidnapper Path: ";
 
-        for (auto z = pathEnemy.begin(); z != pathEnemy.end(); z++)
+        for (; z != pathEnemy.end(); z++)
         {
             cout << *z << " ";
         }
@@ -386,14 +386,16 @@ public:
             int choice;
             bool exist = false;
             if (count % 2 == 0)
-            {
-                moveEnemy();
-            }
+                {
+                    moveEnemy();
+                }
 
             do
             {
+                cout << endl;
                 cout << "Which room you want to go to? ";
                 cin >> choice;
+                
                 for (int i = 0; i < adjacent[0].size(); i++)
                 {
                     if (adjacent[1][i] == choice)
