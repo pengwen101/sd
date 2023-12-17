@@ -49,7 +49,7 @@ public:
 
         // set posisi player secara random
         this->playerPos = rand() % jumlahVertex;
-        this->energy = shortestDistance * 5;
+        this->energy = shortestDistance * 10;
         this->initialEnergy = energy;
     }
 
