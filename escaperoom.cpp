@@ -264,13 +264,6 @@ public:
             }
         }
 
-        for (auto z = distance.begin(); z != distance.end(); z++)
-        {
-            cout << *z << " ";
-        }
-
-        cout << endl;
-
         this->escapePoint = maxIndex;
 
         this->shortestDistance = dijkstra(playerPos, escapePoint);
@@ -292,10 +285,10 @@ public:
     // apa yg bakal terjadi setiap kali player pergi ke posisi lain?
     void movePlayer(int choice)
     {
-            // update posisi player
-            energy = energy - adjMatrix[playerPos][choice];
-            this->playerPos = choice;
-            // cout << "Energy yang tersisa : " << energy << endl;
+        // update posisi player
+        energy = energy - adjMatrix[playerPos][choice];
+        this->playerPos = choice;
+        // cout << "Energy yang tersisa : " << energy << endl;
     }
 
     void moveEnemy()
@@ -418,7 +411,6 @@ public:
         {
             cout << "* ";
         }
-        
     }
 };
 
