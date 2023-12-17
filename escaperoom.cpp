@@ -3,7 +3,6 @@
 #include <vector>
 #include <queue>
 using namespace std;
-// amel gey banget
 
 class EscapeRoomGame
 {
@@ -48,7 +47,7 @@ public:
                 }
                 else
                 {
-                    int p = rand() % 2;
+                    int p = rand() % 5;
                     if (p == 1)
                     {
                         int randomizedWeight = rand() % 10 + 1;
@@ -61,6 +60,7 @@ public:
 
         // set posisi player secara random
         this->playerPos = rand() % jumlahVertex;
+        this->energy = 50;
 
         cout << "Ini player pos = " << playerPos << endl;
     }
@@ -150,9 +150,10 @@ public:
         // tampungan data
         // visited, queue
         vector<bool> visited(this->jumlahVertex, false);
-        vector<int> distance(jumlahVertex, INT_MAX);
+        vector<int> distance(jumlahVertex, 0);
         queue<int> bfsQueue;
         vector<vector<int>> path;
+        path[startVertice] = {startVertice};
         // untuk startig point
         visited[startVertice] = true;
         bfsQueue.push(startVertice);
@@ -191,7 +192,7 @@ public:
         // tampungan data
         // visited, queue
         vector<bool> visited(this->jumlahVertex, false);
-        vector<int> distance(jumlahVertex, INT_MAX);
+        vector<int> distance(jumlahVertex, 0);
         queue<int> bfsQueue;
 
         // untuk startig point
@@ -200,9 +201,7 @@ public:
 
         while (!bfsQueue.empty())
         {
-
             int currVertice = bfsQueue.front();
-
             bfsQueue.pop();
 
             for (int i = 0; i < this->jumlahVertex; i++)
@@ -230,7 +229,7 @@ public:
         // tampungan data
         // visited, queue
         vector<bool> visited(this->jumlahVertex, false);
-        vector<int> distance(jumlahVertex, INT_MAX);
+        vector<int> distance(jumlahVertex, 0);
         queue<int> bfsQueue;
 
         // untuk startig point
@@ -277,6 +276,13 @@ public:
             }
         }
 
+        for (auto z = distance.begin(); z != distance.end(); z++)
+        {
+            cout << *z << " ";
+        }
+
+        cout << endl;
+
         this->escapePoint = maxIndex;
 
         cout << "Escape point = " << escapePoint << endl;
@@ -309,6 +315,10 @@ public:
         auto z = pathEnemy.end();
         advance(z, -1);
 
+        cout << *z << endl;
+
+        cout << "Path: ";
+
         for (auto z = pathEnemy.begin(); z != pathEnemy.end(); z++)
         {
             cout << *z << " ";
@@ -336,7 +346,7 @@ public:
             int jarakEnemy = BFS(playerPos, enemyPos);
             int jarakEscape = BFS(playerPos, escapePoint);
 
-            cout << "You wake up in room #" << playerPos << " the escape point is at room " << escapePoint << " you are " << jarakEnemy << " room away from the kidnapper, you see room " << endl;
+            cout << "You are at room #" << playerPos << " the escape point is at room " << escapePoint << " you are " << jarakEnemy << " room away from the kidnapper, and " << jarakEscape << " away from escape point, you see room " << endl;
 
             vector<vector<int>> adjacent = findAdjacent(playerPos);
             for (int i = 0; i < adjacent[0].size(); i++)
@@ -382,11 +392,4 @@ int main()
     {
         cout << "Select your level: \n1. Easy\n2. Medium\n3. Hard\nChoose a level (1/2/3): ";
         cin >> level;
-    } while (level != 1 && level != 2 && level != 3);
-
-    EscapeRoomGame e(level);
-
-    e.run();
-
-    return 0;
-}
+    } while
