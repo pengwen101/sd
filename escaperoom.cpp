@@ -17,6 +17,8 @@ public:
     int initialEnergy;
     int worstDistance;
 
+    int counter = 1;
+
     EscapeRoomGame()
     {
         jumlahVertex = 30;
@@ -63,9 +65,10 @@ public:
         }
     }
 
+
+    //valiant gilchrist c14220157
     int dijkstra(int startVertex, int endVertex)
     {
-
         vector<int> distance(this->jumlahVertex, INT_MAX);
         vector<bool> visited(this->jumlahVertex, false);
 
@@ -89,6 +92,7 @@ public:
         return distance[endVertex];
     }
 
+    //valiant gilchrist c14220157
     int minDistance(const vector<int> &distance, const vector<bool> &visited)
     {
         int minDistance = INT_MAX, minIndex;
@@ -105,7 +109,9 @@ public:
         return minIndex;
     }
 
+
     // mencari node yang berhubungan dengan node player/node enemy
+    //laura wijaya c14220192
     vector<vector<int>> findAdjacent(int pos)
     {
         vector<vector<int>> adjacent(2);
@@ -121,9 +127,7 @@ public:
         return adjacent;
     }
 
-    // set jumlah vertex dan energy sesuai level
-    // energy = ratio * distance dr posisi player awal ke escape point
-
+    //amelia wibisono c14220160
     vector<int> findPath(int startVertice, int endVertice)
     {
         // error dicek
@@ -166,6 +170,7 @@ public:
         return path[endVertice];
     }
 
+    //amelia wibisono c14220160
     vector<int> BFS(int startVertice)
     {
         // error dicek
@@ -203,6 +208,8 @@ public:
         return distance;
     }
 
+
+    //amelia wibisono c14220160
     int BFS(int startVertice, int endVertice)
     {
         // error dicek
@@ -218,7 +225,7 @@ public:
         vector<int> distance(jumlahVertex, 0);
         queue<int> bfsQueue;
 
-        // untuk startig point
+        // untuk starting point
         visited[startVertice] = true;
         bfsQueue.push(startVertice);
 
@@ -245,6 +252,7 @@ public:
         return (playerPos == escapePoint);
     }
 
+    //laura wijaya c14220192
     void set()
     {
         // set posisi escape point terjauh dari posisi player
@@ -262,15 +270,7 @@ public:
             }
         }
 
-        for (auto z = distance.begin(); z != distance.end(); z++)
-        {
-            cout << *z << " ";
-        }
-
-        cout << endl;
-
         this->escapePoint = maxIndex;
-
         this->shortestDistance = dijkstra(playerPos, escapePoint);
         this->energy = shortestDistance * 2;
         this->initialEnergy = energy;
@@ -290,110 +290,111 @@ public:
     }
 
     // apa yg bakal terjadi setiap kali player pergi ke posisi lain?
+    //tania c14220181
     void movePlayer(int choice)
     {
             // update posisi player
             energy = energy - adjMatrix[playerPos][choice];
             this->playerPos = choice;
-            // cout << "Energy yang tersisa : " << energy << endl;
     }
 
+    //tania c14220181
     void moveEnemy()
     {
         // posisi enemy terupdate, bergerak mendekati player
         vector<int> pathEnemy = findPath(enemyPos, playerPos);
 
         auto z = pathEnemy.begin();
-        advance(z, 1);
 
-        cout << "Kidnapper Path: ";
+        if(counter%2==0){
+            cout << "\nTHE KIDNAPPER IS MOVING TOWARDS YOU!\n";
+            enemyPos = *z;
+        }
+
+        cout << "PATH FROM THE KIDNAPPER TO YOU: ";
 
         for (; z != pathEnemy.end(); z++)
         {
             cout << *z << " ";
         }
-        cout << endl;
+        cout << endl<<endl;
 
-        enemyPos = *z;
     }
 
     bool isDead()
     {
         if (enemyPos == playerPos)
         {
-            cout << "Game over! Kidnapper menemukanmu!";
+            cout << "GAME OVER! YOU'VE BEEN CAUGHT BY THE KIDNAPPER!";
             return true;
         }
         if (energy <= 0)
         {
-            cout << "Game over! Energy habis!";
+            cout << "GAME OVER! YOUR RAN OUT OF ENERGY TO CONTINUE THE ESCAPE!";
             return true;
         }
         return false;
     }
 
-    // asdjhasdhalda
     int calculateScore()
     {
-        int traveledDistance = initialEnergy - energy;
-        int offset = initialEnergy / 5;
-        int score1 = abs(traveledDistance - shortestDistance);
-        if (score1 > offset * 5)
-        {
-            return 1;
-        }
-        else if (score1 > offset * 4)
-        {
-            return 2;
-        }
-        else if (score1 > offset * 3)
-        {
-            return 3;
-        }
-        else if (score1 > offset * 2)
-        {
-            return 4;
-        }
-        else if (score1 > offset)
-        {
+        if (energy > 0.2*shortestDistance){
             return 5;
         }
+
+        if (energy > 0.15*shortestDistance){
+            return 4;
+        }
+
+        if (energy > 0.1*shortestDistance){
+            return 3;
+        }
+
+        if (energy > 0.05*shortestDistance){
+            return 2;
+        }
+
+        if (energy > 0.0*shortestDistance){
+            return 1;
+        }
+        
         return 0;
     }
 
     void run()
     {
-
-        printGraph();
         set();
-        int count = 1;
 
         do
         {
             cout << endl;
-            cout << "Energi Sekarang : " << energy << endl;
+            cout << "-----------------------------------------------------"<<endl;
+           
+            cout << "ENERGY LEFT : " << energy << endl <<endl;
+        
+            cout << "YOU ARE AT ROOM #" << playerPos << " THE ESCAPE POINT IS AT ROOM #" << escapePoint << " THE KIDNAPPER IS AT ROOM #" << enemyPos <<endl;
+
             int jarakEnemy = BFS(playerPos, enemyPos);
             int jarakEscape = BFS(playerPos, escapePoint);
 
-            cout << "You are at room #" << playerPos << " the escape point is at room " << escapePoint << " you are " << jarakEnemy << " room away from the kidnapper, and " << jarakEscape << " away from escape point, you see room " << endl;
+            cout << "\nYOU ARE " << jarakEnemy << " ROOM AWAY FROM THE KIDNAPPER, AND " << jarakEscape << " ROOM AWAY FROM ESCAPE POINT\n";
+            int choice;
+            bool exist = false;
 
+            moveEnemy();
+
+
+            cout << "YOU SEE ROOM " << endl;
             vector<vector<int>> adjacent = findAdjacent(playerPos);
             for (int i = 0; i < adjacent[0].size(); i++)
             {
-                cout << adjacent[1][i] << ", with energy cost " << adjacent[0][i] << endl;
+                cout << adjacent[1][i] << ", WITH ENERGY COST " << adjacent[0][i] << endl;
             }
-
-            int choice;
-            bool exist = false;
-            if (count % 2 == 0)
-                {
-                    moveEnemy();
-                }
 
             do
             {
                 cout << endl;
-                cout << "Which room you want to go to? ";
+                cout << "WHICH ROOM YOU WANT TO GO TO? ";
                 cin >> choice;
                 
                 for (int i = 0; i < adjacent[0].size(); i++)
@@ -406,8 +407,10 @@ public:
                 }
             } while (!exist);
 
+
             movePlayer(choice);
-            count++;
+            counter++;
+        
 
             if (isDead())
             {
@@ -415,7 +418,7 @@ public:
             }
 
         } while (!isWin());
-        cout << "Hore menang!" << endl;
+        cout << "YOU ESCAPED! CONGRATULATIONS YOU GET TO LIVE!\nYOUR SCORE: " << endl;
         for (int i = 0; i < calculateScore(); i++)
         {
             cout << "* ";
