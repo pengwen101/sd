@@ -15,7 +15,6 @@ public:
     int energy;           // energynya player, bakal keupdate terus
     int shortestDistance; // jarak terpendek dari posisi player ke escape point
     int initialEnergy;
-    int worstDistance;
 
     int counter = 1;
 
@@ -41,7 +40,6 @@ public:
                     if (p == 1)
                     {
                         int randomizedWeight = rand() % 10 + 1;
-                        worstDistance += randomizedWeight;
                         adjMatrix[i][j] = randomizedWeight;
                         adjMatrix[j][i] = randomizedWeight;
                     }
@@ -138,9 +136,7 @@ public:
         }
 
         // tampungan data
-        // visited, queue
         vector<bool> visited(this->jumlahVertex, false);
-        vector<int> distance(jumlahVertex, 0);
         queue<int> bfsQueue;
         vector<vector<int>> path(jumlahVertex);
         path[startVertice] = {startVertice};
@@ -160,7 +156,6 @@ public:
                 if (this->adjMatrix[currVertice][i] > 0 && !visited[i])
                 {
                     visited[i] = true;
-                    distance[i] = distance[currVertice] + 1;
                     path[i] = path[currVertice];
                     path[i].push_back(i);
                     bfsQueue.push(i);
@@ -275,7 +270,7 @@ public:
         this->energy = shortestDistance * 2;
         this->initialEnergy = energy;
 
-        // set posisi enemy di sebelah escape point
+        // set posisi enemy terjauh kedua dari posisi player
         int maxDistances = 0;
         int maxIndeks = 0;
         for (int i = 0; i < jumlahVertex; i++)
@@ -336,8 +331,15 @@ public:
         return false;
     }
 
+    //
     int calculateScore()
     {
+        //energy = sisa energi yang dimiliki oleh player
+        //nilai terbaik didapatkan saat initial energy - travelled distance = shortest distance
+        // initial energy - travelled distance = energy
+        //maka, skor terbaik didapat ketika energy = shortest distance,
+        //namun di game ini sulit mendapatkan skor tsb sehingga 0.2*shortest distance cukup utk mendapat nilai terbaik
+
         if (energy > 0.2*shortestDistance){
             return 5;
         }
@@ -382,7 +384,6 @@ public:
             bool exist = false;
 
             moveEnemy();
-
 
             cout << "YOU SEE ROOM " << endl;
             vector<vector<int>> adjacent = findAdjacent(playerPos);
@@ -429,7 +430,6 @@ public:
 
 int main()
 {
-
     cout << "You have been abducted and placed in a basement with many rooms, you need to walk a certain distance before reaching to the next room and it takes a certain amount of your energy. Find your way out before you run out of energy!" << endl
          << endl;
 
