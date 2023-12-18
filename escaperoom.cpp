@@ -14,7 +14,6 @@ public:
     int enemyPos;         // posisi enemy, bakal keupdate terus
     int energy;           // energynya player, bakal keupdate terus
     int shortestDistance; // jarak terpendek dari posisi player ke escape point
-    int initialEnergy;
 
     int counter = 1;
 
@@ -268,7 +267,6 @@ public:
         this->escapePoint = maxIndex;
         this->shortestDistance = dijkstra(playerPos, escapePoint);
         this->energy = shortestDistance * 2;
-        this->initialEnergy = energy;
 
         // set posisi enemy terjauh kedua dari posisi player
         int maxDistances = 0;
