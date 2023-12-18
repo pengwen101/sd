@@ -1,3 +1,8 @@
+//kelompok 7
+//valiant gilchrist c14220157
+//amelia wibisono c14220160
+//tania jessica c14220181
+//laura wijaya c14220192
 #include <iostream>
 #include <list>
 #include <vector>
@@ -283,7 +288,7 @@ public:
     }
 
     // apa yg bakal terjadi setiap kali player pergi ke posisi lain?
-    //tania c14220181
+    //tania jessica c14220181
     void movePlayer(int choice)
     {
             // update posisi player
@@ -291,7 +296,7 @@ public:
             this->playerPos = choice;
     }
 
-    //tania c14220181
+    //tania jessica c14220181
     void moveEnemy()
     {
         // posisi enemy terupdate, bergerak mendekati player
